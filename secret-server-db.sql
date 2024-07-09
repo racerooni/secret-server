@@ -34,19 +34,10 @@ CREATE TABLE `secrets` (
   `secret` text NOT NULL,
   `createdAt` datetime DEFAULT NULL,
   `expireAfter` datetime DEFAULT NULL,
-  `expireAfterViews` int(11) NOT NULL DEFAULT 0
+  `expireAfterViews` int(11) NOT NULL DEFAULT 0,
+	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `secrets`
---
-ALTER TABLE `secrets`
-  ADD PRIMARY KEY (`id`);
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

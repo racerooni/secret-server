@@ -57,6 +57,10 @@
           console.log()
           const data = await response.json();
           msg.innerHTML = `<span style='color: #00ff00;'>Secret has been added successfully! <br> URL assigned to your secret: ${data.uuid}</span>`;
+          msg.addEventListener('click', ()=> {
+            window.location.assign(`/secret/${data.uuid}`)
+          })
+          msg.style.cursor = "pointer"
         } catch (error) {
             console.error('error adding secret:', error);
             msg.innerHTML = "<span style='color: #ff0000;'>An error occured while adding the secret!</span>";
