@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const secretfunctions_1 = require("./secretfunctions");
 const path_1 = __importDefault(require("path"));
+const uuid_1 = require("uuid");
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 app.use(express_1.default.json());
@@ -37,15 +38,15 @@ app.get('/secret', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 }));
 app.post('/secret', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const uuid = (0, uuid_1.v4)(); //random UUID generálása a titkositashoz
         const { secret, expireAfter, expireAfterViews } = req.body;
-        yield (0, secretfunctions_1.addSecret)(req, res);
-        res.status(201).json({ message: 'Secret added successfully' });
+        yield (0, secretfunctions_1.addSecret)(req, res, uuid);
+        res.status(200).send({ msg: "Your secret has been added successfully", uuid: uuid });
     }
     catch (error) {
-        console.error('Error adding secret:', error);
-        res.status(500).json({ error: "secret couldnt be added" });
+        res.status(500).send('There was an error while adding your secret!');
     }
 }));
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server running on http://localhost:${port}`);
 });

@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addSecret = exports.getSecretByHash = void 0;
-const uuid_1 = require("uuid");
 const xmlbuilder_1 = require("./xmlbuilder");
 const secret_model_1 = require("./secret-model");
 const getSecretByHash = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -18,8 +17,7 @@ const getSecretByHash = (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const secret = yield (0, secret_model_1.findSecret)(hash); //secret valtozoba eltaroljuk az adatbazisbol lekert adatokat
         if (!secret) {
-            console.log('failed to get secret');
-            return res.status(404).json({ message: 'secret not found' });
+            return res.status(404).json({ message: 'This secret doesnt exit or might have already expired, or has been viewed too many times' });
         }
         const headerAccept = req.headers.accept;
         if (headerAccept === 'application/xml') { // Ha az accept header XML akkor felepitjuk xml formatumba es azt adjuk vissza
@@ -29,25 +27,23 @@ const getSecretByHash = (req, res) => __awaiter(void 0, void 0, void 0, function
         else {
             res.json(secret);
         }
-        yield (0, secret_model_1.decrementViews)(hash);
-        return secret; // Return the secret or result you need
+        yield (0, secret_model_1.decrementViews)(hash); //meghivjuk minden hash megtekintesnel a decrementViews funkciok mely csokkenti a hátralévő megtekintések számát
+        return secret;
     }
     catch (err) {
-        console.error('Error fetching data:', err);
-        throw err; // Rethrow the error to be handled by the calling function
+        console.error('error fetching the data:', err);
     }
 });
 exports.getSecretByHash = getSecretByHash;
-const addSecret = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const addSecret = (req, res, uuid) => __awaiter(void 0, void 0, void 0, function* () {
     const { secret, expireAfter, expireAfterViews } = req.body;
-    const uuid = (0, uuid_1.v4)(); //random UUID generálása
-    console.log(secret, expireAfter, expireAfterViews);
+    const id = uuid;
+    console.log(uuid, secret, expireAfter, expireAfterViews);
     try {
-        yield (0, secret_model_1.saveSecret)(uuid, secret, expireAfter, expireAfterViews);
-        res.status(201).json({ url: `/v1/secret/${uuid}` });
+        yield (0, secret_model_1.saveSecret)(id, secret, expireAfter, expireAfterViews);
     }
     catch (err) {
-        res.status(500).json({ error: "an error occured while saving the secret" });
+        console.error(err);
     }
 });
 exports.addSecret = addSecret;
