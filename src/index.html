@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      label {
+        width: 200px;
+      }
+      p{
+        font-size: .8rem;
+        color: grey;
+        display: inline;
+      }
+
+    </style>
+  </head>
+  <body>
+    <form id="newsecret">
+      <label for="secret">Secret:</label>
+      <input type="text" name="secret" id="secret" /> <br />
+      <label for="expireAfterViews">Expire after</label>
+      <input type="number" name="expireAfterViews" id="expireAfterViews" min="1" required/><span>views</span>
+      <p>The secret won't be available after the given number of views. It must be greater than 0</p> <br>
+      <label for="expireAfterMinutes">Expire in</label>
+      <input type="number" name="expireAfterMinutes" id="expireAfterMinutes" required/>
+      <span>minutes</span>
+      <p>The secret won't be available after the given time. The value is provided in minutes. 0 means never expires</p> <br>
+      <button type="submit">Add secret</button>
+    </form>
+    <h2 id="message"></h2>
+
+    <script>
+      document.getElementById("newsecret").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const secret = document.getElementById("secret").value;
+        const expireAfterViews =
+          parseInt(document.getElementById("expireAfterViews").value);
+        const expireAfter = parseInt(document.getElementById("expireAfterMinutes").value);
+        const msg = document.getElementById('message');
+        
+
+        try {
+          const response = await fetch("/secret", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              secret,
+              expireAfter: expireAfter,
+              expireAfterViews: expireAfterViews,
+            }),
+          });
+          console.log()
+          const data = await response.json();
+          msg.innerHTML = `<span style='color: #00ff00;'>Secret has been added successfully! <br> URL assigned to your secret: ${data.uuid}</span>`;
+        } catch (error) {
+            console.error('error adding secret:', error);
+            msg.innerHTML = "<span style='color: #ff0000;'>An error occured while adding the secret!</span>";
+        }
+      });
+    </script>
+  </body>
+</html>
